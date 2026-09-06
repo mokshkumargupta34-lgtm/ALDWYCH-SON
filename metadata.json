@@ -1,0 +1,6 @@
+{
+  "name": "ALDWYCH & SON",
+  "description": "Bespoke and made-to-measure evening tailoring on Savile Row, London. Scrollytelling portfolio for The Midnight Commission.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
