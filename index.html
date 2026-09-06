@@ -1847,6 +1847,53 @@
       }
 
       /* ==================================================================
+         PHONES
+         Measured at 390x844 with the CPU throttled 4x, the page dropped every
+         frame in every section, with 44-72 long tasks apiece and a worst of
+         1343ms. Desktop had none at all: the difference is main-thread work,
+         not compositing, so the answer is to stop doing it rather than to make
+         it cheaper. The staging below is desktop's; a phone gets the content.
+         ================================================================== */
+      @media (max-width: 900px) {
+        /* 2560px of tartan for a 390px screen. The small crop is 80 KB against
+           780, and a full-viewport masked layer is the most expensive thing the
+           hero paints - so this is decode cost as much as transfer. */
+        .hero-fabric {
+          background-image: url('/images/m/hero-fabric.webp');
+        }
+
+        /* The drapes are decoration at 82px a side. Fifty-two animations, four
+           fold fans, nap, bloom and two tiebacks is a great deal of
+           compositing for that. The cloth and its shading stay, so the section
+           is still framed. */
+        .fold-fan,
+        .velvet-nap,
+        .velvet-bloom,
+        .tieback,
+        .curtain-gather {
+          display: none;
+        }
+
+        /* The split gate copies the whole Collection twice. There is nothing
+           to split here - the Collection is a vertical stack below 1024 - and
+           the clone alone was the 1343ms task. */
+        .split-gate { display: none; }
+
+        /* A still of the figure instead of the model: no 1 MB download, no
+           model-viewer, no WebGL. Same image, same place. */
+        .commission-figure model-viewer,
+        .commission-figure-loading {
+          display: none;
+        }
+
+        .commission-figure {
+          background-image: url('/images/commission-figure.jpg');
+          background-size: cover;
+          background-position: center top;
+        }
+      }
+
+      /* ==================================================================
          DORMANCY
          Two things on this page keep working long after anyone can see them.
          Neither shows up as a long task - it is all paint and composite - so
@@ -2791,12 +2838,15 @@
         </h1>
 
         <!-- Revealed through a circular hole in the figure above it -->
-        <img
-          class="hero-figure hero-figure-alt"
-          src="/images/hero-figure-alt.webp"
-          alt=""
-          aria-hidden="true"
-        />
+        <picture>
+          <source media="(max-width: 900px)" srcset="/images/m/hero-figure-alt.webp" />
+          <img
+            class="hero-figure hero-figure-alt"
+            src="/images/hero-figure-alt.webp"
+            alt=""
+            aria-hidden="true"
+          />
+        </picture>
         <picture>
           <source srcset="/images/hero-figure.webp" type="image/webp" />
           <img
@@ -2859,12 +2909,17 @@
 
       <!-- Runs while the copy is lighting up. A real element rather than
            new Audio() so the browser handles preload declaratively and the
-           state is inspectable. -->
+           state is inspectable.
+
+           preload="none", not "auto": 359 KB was being fetched on every load,
+           including phones, for a decorative loop that browsers will not play
+           at all until the reader has interacted with the page. It is fetched
+           when something asks it to play. -->
       <audio
         id="reveal-sound"
         src="/audio/reveal.mp3"
         loop
-        preload="auto"
+        preload="none"
       ></audio>
 
       <div class="manifesto-grid">
@@ -2891,7 +2946,7 @@
          screen and the reader has not asked for reduced motion. -->
     <div class="stitch-video" aria-hidden="true">
       <video
-        src="/video/leather-stitching.mp4"
+        data-src-desktop="/video/leather-stitching.mp4" data-src-phone="/video/m/leather-stitching.mp4"
         muted
         loop
         playsinline
@@ -2978,7 +3033,7 @@
                CTA can preselect the suit before opening the modal. -->
           <article class="collection-panel" data-suit="The Ashdown">
             <div class="panel-img-wrap">
-              <img src="/images/ashdown.jpg" alt="The Ashdown Dinner Suit" referrerPolicy="no-referrer" />
+              <img src="/images/ashdown.webp" alt="The Ashdown Dinner Suit" referrerPolicy="no-referrer" />
             </div>
             <div class="panel-info">
               <div class="numeral-roman" id="collection-num">III. THE COLLECTION — I</div>
@@ -2986,7 +3041,7 @@
               <p class="panel-spec">Single-breasted, peak lapel · Midnight wool barathea, 12oz</p>
               <p class="panel-desc">Cut with a structured shoulder and high armhole for natural posture. Lined in pure heavy silk.</p>
               <div class="panel-foot">
-                <img class="panel-swatch" src="/images/swatch_barathea.jpg" alt="" />
+                <picture><source media="(max-width: 900px)" srcset="/images/m/swatch_barathea.webp" /><img class="panel-swatch" src="/images/swatch_barathea.webp" alt="" /></picture>
                 <div class="panel-cloth">Midnight Barathea<br />Woven in Yorkshire</div>
                 <div class="panel-price"><small>From</small>£4,850</div>
               </div>
@@ -2996,7 +3051,7 @@
 
           <article class="collection-panel" data-suit="The Belgrave">
             <div class="panel-img-wrap">
-              <img src="/images/belgrave.jpg" alt="The Belgrave Dinner Suit" referrerPolicy="no-referrer" />
+              <img src="/images/belgrave.webp" alt="The Belgrave Dinner Suit" referrerPolicy="no-referrer" />
             </div>
             <div class="panel-info">
               <div class="numeral-roman">III. THE COLLECTION — II</div>
@@ -3004,7 +3059,7 @@
               <p class="panel-spec">Double-breasted, six-on-two · Black herringbone, 11oz</p>
               <p class="panel-desc">A formidable evening silhouette featuring traditional six-button waist closure and stiff silk grosgrain facings.</p>
               <div class="panel-foot">
-                <img class="panel-swatch" src="/images/swatch_grosgrain.jpg" alt="" />
+                <picture><source media="(max-width: 900px)" srcset="/images/m/swatch_grosgrain.webp" /><img class="panel-swatch" src="/images/swatch_grosgrain.webp" alt="" /></picture>
                 <div class="panel-cloth">Silk Grosgrain Facing<br />Milled in Como</div>
                 <div class="panel-price"><small>From</small>£5,400</div>
               </div>
@@ -3014,7 +3069,7 @@
 
           <article class="collection-panel" data-suit="The Thorne">
             <div class="panel-img-wrap">
-              <img src="/images/thorne.jpg" alt="The Thorne Ivory Dinner Jacket" referrerPolicy="no-referrer" />
+              <img src="/images/thorne.webp" alt="The Thorne Ivory Dinner Jacket" referrerPolicy="no-referrer" />
             </div>
             <div class="panel-info">
               <div class="numeral-roman">III. THE COLLECTION — III</div>
@@ -3022,7 +3077,7 @@
               <p class="panel-spec">Ivory dinner jacket, shawl collar · Irish linen-silk</p>
               <p class="panel-desc">Designed for tropical evening formalwear. Cut from hand-loomed linen-silk with a sweeping shawl lapel.</p>
               <div class="panel-foot">
-                <img class="panel-swatch" src="/images/swatch_linen.jpg" alt="" />
+                <picture><source media="(max-width: 900px)" srcset="/images/m/swatch_linen.webp" /><img class="panel-swatch" src="/images/swatch_linen.webp" alt="" /></picture>
                 <div class="panel-cloth">Irish Linen-Silk<br />Hand-loomed, County Antrim</div>
                 <div class="panel-price"><small>From</small>£5,150</div>
               </div>
@@ -3085,8 +3140,8 @@
         <div class="swatch-item">
           <div class="swatch-img-wrap" tabindex="0" role="img"
                aria-label="Midnight barathea wool, woven in Yorkshire">
-            <img src="/images/swatch_barathea.jpg" alt="" referrerPolicy="no-referrer" />
-            <img class="swatch-lit" src="/images/swatch_barathea.jpg" alt="" aria-hidden="true" referrerPolicy="no-referrer" />
+            <picture><source media="(max-width: 900px)" srcset="/images/m/swatch_barathea.webp" /><img src="/images/swatch_barathea.webp" alt="" referrerPolicy="no-referrer" /></picture>
+            <picture><source media="(max-width: 900px)" srcset="/images/m/swatch_barathea.webp" /><img class="swatch-lit" src="/images/swatch_barathea.webp" alt="" aria-hidden="true" referrerPolicy="no-referrer" /></picture>
             <span class="swatch-sheen"></span>
           </div>
           <p class="swatch-caption">Midnight Barathea Wool 12oz — woven in Yorkshire.</p>
@@ -3099,8 +3154,8 @@
         <div class="swatch-item">
           <div class="swatch-img-wrap" tabindex="0" role="img"
                aria-label="Silk grosgrain facing, milled in Como">
-            <img src="/images/swatch_grosgrain.jpg" alt="" referrerPolicy="no-referrer" />
-            <img class="swatch-lit" src="/images/swatch_grosgrain.jpg" alt="" aria-hidden="true" referrerPolicy="no-referrer" />
+            <picture><source media="(max-width: 900px)" srcset="/images/m/swatch_grosgrain.webp" /><img src="/images/swatch_grosgrain.webp" alt="" referrerPolicy="no-referrer" /></picture>
+            <picture><source media="(max-width: 900px)" srcset="/images/m/swatch_grosgrain.webp" /><img class="swatch-lit" src="/images/swatch_grosgrain.webp" alt="" aria-hidden="true" referrerPolicy="no-referrer" /></picture>
             <span class="swatch-sheen"></span>
           </div>
           <p class="swatch-caption">Silk Grosgrain Facing — stiffened ribbed finish from Como.</p>
@@ -3113,8 +3168,8 @@
         <div class="swatch-item">
           <div class="swatch-img-wrap" tabindex="0" role="img"
                aria-label="Irish linen-silk blend, hand-loomed in County Antrim">
-            <img src="/images/swatch_linen.jpg" alt="" referrerPolicy="no-referrer" />
-            <img class="swatch-lit" src="/images/swatch_linen.jpg" alt="" aria-hidden="true" referrerPolicy="no-referrer" />
+            <picture><source media="(max-width: 900px)" srcset="/images/m/swatch_linen.webp" /><img src="/images/swatch_linen.webp" alt="" referrerPolicy="no-referrer" /></picture>
+            <picture><source media="(max-width: 900px)" srcset="/images/m/swatch_linen.webp" /><img class="swatch-lit" src="/images/swatch_linen.webp" alt="" aria-hidden="true" referrerPolicy="no-referrer" /></picture>
             <span class="swatch-sheen"></span>
           </div>
           <p class="swatch-caption">Irish Linen-Silk Blend — hand-loomed in County Antrim.</p>
@@ -3357,8 +3412,12 @@
            for the whole of the rest of the page. preload="none" keeps the file
            off the wire entirely until the reader is on their way here. -->
       <div class="testimony-film" aria-hidden="true">
-        <video id="testimonyFilm" muted loop playsinline preload="none"
-               poster="/images/swatch_linen.jpg">
+        <!-- No poster. It was pointing at a cloth swatch, which is neither
+             this film nor anything to do with it, and it cost a 118 KB fetch
+             on every load to show the wrong picture. The section's own ivory
+             sits behind until the first frame arrives. -->
+        <video id="testimonyFilm" muted loop playsinline preload="none">
+          <source media="(max-width: 900px)" src="/video/m/jackets-rail.mp4" type="video/mp4" />
           <source src="/video/jackets-rail.mp4" type="video/mp4" />
         </video>
       </div>
@@ -3517,8 +3576,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
     <!-- <model-viewer> for the commission figure. Ships as an ES module, so it
-         defers by nature and never blocks the scroll rig above. -->
-    <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.3.1/dist/model-viewer.min.js"></script>
+         defers by nature and never blocks the scroll rig above. Fetched only
+         where it is used: below 900px the figure is a still, so the 283 KB of
+         library and the 1 MB model are both dead weight. -->
+    <script>
+      if (!window.matchMedia('(max-width: 900px)').matches) {
+        var mv = document.createElement('script');
+        mv.type = 'module';
+        mv.src = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@4.3.1/dist/model-viewer.min.js';
+        document.head.appendChild(mv);
+      }
+    </script>
 
     <script>
       /* ==========================================================================
@@ -4433,11 +4501,40 @@
            events fire once the custom element is defined and the GLB streams
            in.
            ================================================================== */
+        /* The divider film is 1320 KB at 1280px and 104 KB at 640. Which one
+           is wanted is not knowable from markup alone without duplicating the
+           element, so the source is held in data attributes and chosen here,
+           before anything has been fetched. */
+        (function pickDividerFilm() {
+          var v = document.querySelector('video[data-src-desktop]');
+          if (!v) return;
+          var phone = window.matchMedia('(max-width: 900px)').matches;
+          v.src = phone ? v.dataset.srcPhone : v.dataset.srcDesktop;
+        })();
+
+        /* True on phones. Declared here, above the first initialiser that
+           reads it: as a const further down it is still in its temporal dead
+           zone when these IIFEs run, and each one dies on a ReferenceError -
+           silently taking the commission figure and the section handover with
+           it. Read by initCommissionModel, initSplitGate and initCurtains. */
+        const isPhone = matchMedia('(max-width: 900px)').matches;
+
         (function initCommissionModel() {
           const figure = document.getElementById('commissionFigure');
           const model = document.getElementById('commissionModel');
           const loading = document.getElementById('commissionLoading');
           if (!figure || !model) return;
+
+          /* The src sits in the markup so that the element is complete without
+             script, but loading="lazy" means nothing is fetched until the
+             reader nears the section - which leaves time to take it away
+             again. On a phone the CSS is already showing a still in its place,
+             so dropping the attribute saves the whole megabyte. */
+          if (isPhone) {
+            model.removeAttribute('src');
+            figure.classList.add('is-loaded');
+            return;
+          }
 
           model.addEventListener('load', () => figure.classList.add('is-loaded'));
 
@@ -4480,6 +4577,11 @@
           const gate = document.getElementById('splitGate');
           const backdrop = document.getElementById('splitBackdrop');
           if (!gate || !backdrop || typeof gsap === 'undefined') return;
+          /* Cloning the Collection twice and Cloth & Hours once was the single
+             longest task on the page under throttling. Below 900px the
+             Collection is a vertical stack, so there is no horizontal run to
+             hand over from and nothing worth splitting. */
+          if (isPhone) return;
           const left = gate.querySelector('.split-half--left');
           const right = gate.querySelector('.split-half--right');
           const source = document.querySelector('#collection .collection-pin-wrapper');
@@ -4812,6 +4914,11 @@
              The ticker is only attached while the section is anywhere near the
              viewport - there is no reason to sample scroll for the rest of the
              page. */
+          /* The lean is read on the rig and the lower fan, and the fans are
+             not rendered on a phone. Sampling scroll every frame to move
+             something invisible is pure cost. */
+          if (isPhone) return;
+
           let lastY = window.scrollY;
           const settle = () => {
             const y = window.scrollY;
@@ -4920,7 +5027,9 @@
             /* The loop master: a conventional GOP at 960x540, 1.7MB. The scrub
                master spends its bytes on keyframes so it can seek — worth it to
                scrub, pure waste to play straight through on a phone. */
-            video.src = '/video/anatomy-film-loop.mp4';
+            video.src = isPhone
+              ? '/video/m/anatomy-film-loop.mp4'
+              : '/video/anatomy-film-loop.mp4';
             video.load();
             video.loop = true;
             video.muted = true; // required for autoplay on iOS/Android
